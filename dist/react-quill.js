@@ -562,6 +562,7 @@ return /******/ (function(modules) { // webpackBootstrap
 				case 'indent':
 				case 'image':
 				case 'video':
+				case 'clean':
 					return this.renderButton(item, key);
 				default:
 					return this.renderAction(item, key);
@@ -701,7 +702,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /***/ function(module, exports) {
 
 	/*!
-	 * Quill Editor v1.0.2
+	 * Quill Editor v1.0.3
 	 * https://quilljs.com/
 	 * Copyright (c) 2014, Jason Chen
 	 * Copyright (c) 2013, salesforce.com
@@ -2815,7 +2816,7 @@ return /******/ (function(modules) { // webpackBootstrap
 		};
 		Quill.events = _emitter2.default.events;
 		Quill.sources = _emitter2.default.sources;
-		Quill.version =  false ? 'dev' : ("1.0.2");
+		Quill.version =  false ? 'dev' : ("1.0.3");
 	
 		Quill.imports = {
 		  'delta': _delta2.default,
@@ -7564,6 +7565,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	
 		var _delta2 = _interopRequireDefault(_delta);
 	
+		var _op = __webpack_require__(26);
+	
+		var _op2 = _interopRequireDefault(_op);
+	
 		var _parchment = __webpack_require__(2);
 	
 		var _parchment2 = _interopRequireDefault(_parchment);
@@ -7628,9 +7633,23 @@ return /******/ (function(modules) { // webpackBootstrap
 		    _this.addBinding({ key: Keyboard.keys.ENTER, metaKey: null, ctrlKey: null, altKey: null }, function () {});
 		    _this.addBinding({ key: Keyboard.keys.BACKSPACE }, { collapsed: true, prefix: /^.?$/ }, function (range, context) {
 		      if (range.index === 0) return;
-		      var index = context.offset === 0 ? range.index : range.index - 1;
-		      this.quill.deleteText(index, 1, _quill2.default.sources.USER);
-		      this.quill.setSelection(range.index - 1, _quill2.default.sources.SILENT);
+	
+		      var _quill$scroll$line = this.quill.scroll.line(range.index);
+	
+		      var _quill$scroll$line2 = _slicedToArray(_quill$scroll$line, 1);
+	
+		      var line = _quill$scroll$line2[0];
+	
+		      var formats = {};
+		      if (context.offset === 0) {
+		        var curFormats = line.formats();
+		        var prevFormats = this.quill.getFormat(range.index - 1, 1);
+		        formats = _op2.default.attributes.diff(curFormats, prevFormats) || {};
+		      }
+		      this.quill.deleteText(range.index - 1, 1, _quill2.default.sources.USER);
+		      if (Object.keys(formats).length > 0) {
+		        this.quill.formatLine(range.index - 1, 1, formats, _quill2.default.sources.USER);
+		      }
 		      this.quill.selection.scrollIntoView();
 		    });
 		    _this.addBinding({ key: Keyboard.keys.DELETE }, { collapsed: true, suffix: /^$/ }, function (range) {
@@ -7678,12 +7697,12 @@ return /******/ (function(modules) { // webpackBootstrap
 		        var range = _this2.quill.getSelection();
 		        if (range == null) return; // implies we do not have focus
 	
-		        var _quill$scroll$line = _this2.quill.scroll.line(range.index);
+		        var _quill$scroll$line3 = _this2.quill.scroll.line(range.index);
 	
-		        var _quill$scroll$line2 = _slicedToArray(_quill$scroll$line, 2);
+		        var _quill$scroll$line4 = _slicedToArray(_quill$scroll$line3, 2);
 	
-		        var line = _quill$scroll$line2[0];
-		        var offset = _quill$scroll$line2[1];
+		        var line = _quill$scroll$line4[0];
+		        var offset = _quill$scroll$line4[1];
 	
 		        var _quill$scroll$leaf = _this2.quill.scroll.leaf(range.index);
 	

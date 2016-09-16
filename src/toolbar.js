@@ -152,6 +152,7 @@ var QuillToolbar = React.createClass({
 			case 'indent':
 			case 'image':
 			case 'video':
+			case 'clean':
 				return this.renderButton(item, key);
 			default:
 				return this.renderAction(item, key);
